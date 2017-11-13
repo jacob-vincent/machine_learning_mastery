@@ -1,4 +1,7 @@
 # Import statements
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or any {'0', '1', '2'}
+import tensorflow as tf
 import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import Dense
@@ -14,8 +17,8 @@ X = dataset[:,0:8]
 Y = dataset[:,8]
 
 # Train/test split
-test = float(input('Enter proportion of data (as a decimal) to use as the test set: '))
 train = float(input('Enter the proportion of data (as a decimal) to use as the training set: '))
+test = float(input('Enter the proportion of data (as a decimal) to use as the test set: '))
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = test,\
  train_size = train, random_state = 42)
 np.savetxt('X_train.csv', X_train, delimiter = ',')
@@ -30,7 +33,7 @@ model.add(Dense(8, activation = 'relu'))
 model.add(Dense(16, activation = 'relu'))
 model.add(Dense(32, activation = 'relu'))
 #model.add(Dense(200, activation = 'relu'))
-model.add(Dense(100, activation = 'relu'))
+model.add(Dense(200, activation = 'relu'))
 model.add(Dense(32, activation = 'relu'))
 model.add(Dense(16, activation = 'relu'))
 model.add(Dense(8, activation = 'relu'))
