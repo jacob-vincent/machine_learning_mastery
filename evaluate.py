@@ -12,7 +12,7 @@ X_test = np.loadtxt('X_test.csv', delimiter = ',')
 y_test = np.loadtxt('y_test.csv', delimiter = ',')
 
 # Load model
-model = load_model('model_1.h5')
+model = load_model('model_2.h5')
 
 # Predict on new data
 predictions = model.predict(X_test)

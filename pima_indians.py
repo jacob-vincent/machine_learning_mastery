@@ -6,6 +6,7 @@ import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import Dense
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 import h5py
 
 # Fix random seed
@@ -15,6 +16,10 @@ np.random.seed(42)
 dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',')
 X = dataset[:,0:8]
 Y = dataset[:,8]
+
+# Scale data
+scaler = MinMaxScaler(feature_range = (0,1))
+X_scaled = scaler.fit_transform(X)
 
 # Train/test split
 train = float(input('Enter the proportion of data (as a decimal) to use as the training set: '))
@@ -46,7 +51,7 @@ model.compile(loss = 'binary_crossentropy', optimizer = 'adam', metrics = ['accu
 model.fit(X_train, y_train, epochs = 150, batch_size = 10)
 
 # Save model
-model.save('model_1.h5')
+model.save('model_2.h5')
 
 # Evaluate model
 scores = model.evaluate(X_train, y_train)
