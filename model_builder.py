@@ -13,7 +13,8 @@ import h5py
 np.random.seed(42)
 
 # Load dataset
-dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',')
+path = str(input('Enter path to dataset: '))
+dataset = np.loadtxt(path, delimiter=',')
 X = dataset[:,0:8]
 Y = dataset[:,8]
 
@@ -38,7 +39,7 @@ model.add(Dense(8, activation = 'relu'))
 model.add(Dense(16, activation = 'relu'))
 model.add(Dense(32, activation = 'relu'))
 #model.add(Dense(200, activation = 'relu'))
-model.add(Dense(200, activation = 'relu'))
+model.add(Dense(200, activation = 'tanh'))
 model.add(Dense(32, activation = 'relu'))
 model.add(Dense(16, activation = 'relu'))
 model.add(Dense(8, activation = 'relu'))
