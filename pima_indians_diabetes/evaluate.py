@@ -106,7 +106,7 @@ def plot_precision_recall_curve(trues, probs):
 
 
 con_mat = create_confusion_matrix(comps)
-print("Confustion Matrix")
+print("Confusion Matrix")
 print(con_mat)
 model_metrics(con_mat)
 plot_roc_curve(y_test, rounded)
