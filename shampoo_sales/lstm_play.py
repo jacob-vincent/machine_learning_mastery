@@ -1,11 +1,13 @@
 from pandas import DataFrame, Series, concat, read_csv, datetime
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+import numpy
+from __future__ import absolute_import
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
 from math import sqrt
 from matplotlib import pyplot
-import numpy
+
 
 # date-time parsing function for loading the dataset
 def parser(x):
