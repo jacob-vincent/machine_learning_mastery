@@ -4,7 +4,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import numpy
 from keras.models import Sequential
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, TimeDistributed
 from math import sqrt
 from matplotlib import pyplot
 
@@ -57,18 +57,23 @@ def invert_scale(scaler, X, value):
 	return inverted[0, -1]
 
 # fit an LSTM network to training data
-def fit_lstm(train, batch_size, nb_epoch, neurons):
+def fit_lstm(train, test, batch_size, nb_epoch, neurons):
 	X, y = train[:, 0:-1], train[:, -1]
 	X = X.reshape(X.shape[0], 1, X.shape[1])
+
+	x_test, y_test = test[:, 0:-1], test[:, -1]
+	x_test = x_test.reshape(x_test.shape[0], 1, x_test.shape[1])
+
 	print(X.shape)
+	print(x_test.shape)
 	model = Sequential()
-	model.add(LSTM(neurons, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=True))
+	model.add(LSTM(neurons, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=True, return_sequences=True))
 	model.add(Dense(2*neurons, activation='relu'))
 	model.add(Dense(1))
 	model.compile(loss='mean_squared_error', optimizer='adam')
 	for i in range(nb_epoch):
 		print ('Round ' + str(i) + ' of ' + str(nb_epoch))
-		model.fit(X, y, epochs=1, batch_size=batch_size, verbose=1, shuffle=False)
+		model.fit(X, y, epochs=1, batch_size=batch_size, verbose=1, shuffle=False, validation_data=(x_test, y_test))
 		model.reset_states()
 	return model
 
@@ -79,7 +84,7 @@ def forecast_lstm(model, batch_size, X):
 	return yhat[0,0]
 
 # load dataset
-series = read_csv('shampoo_sales_data.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
+series = read_csv('~/Desktop/Machine_learning_mastery/shampoo_sales/shampoo_sales_data.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
 
 # transform data to be stationary
 raw_values = series.values
@@ -98,7 +103,7 @@ scaler, train_scaled, test_scaled = scale(train, test)
 print(train_scaled.shape, test_scaled.shape)
 
 # fit the model
-lstm_model = fit_lstm(train_scaled, 1, 3000, 4)
+lstm_model = fit_lstm(train_scaled, test_scaled, 1, 3000, 4)
 # forecast the entire training dataset to build up state for forecasting
 train_reshaped = train_scaled[:, 0].reshape(len(train_scaled), 1, 1)
 lstm_model.predict(train_reshaped, batch_size=1)
@@ -122,6 +127,10 @@ for i in range(len(test_scaled)):
 rmse = sqrt(mean_squared_error(raw_values[-12:], predictions))
 print('Test RMSE: %.3f' % rmse)
 # line plot of observed vs predicted
-pyplot.plot(raw_values[-12:])
-pyplot.plot(predictions)
-pyplot.show()
+# pyplot.plot(raw_values[-12:])
+# pyplot.plot(predictions)
+# pyplot.show()
+
+# Evaluate underfitting/overfitting
+pyplot(lstm_model.history['loss'])
+pyplot(lstm_model.history[''])
