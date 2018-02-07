@@ -92,5 +92,11 @@ pyplot.plot(predictions)
 pyplot.show()
 
 # Evaluate underfitting/overfitting
-pyplot(loaded_model.history)
-pyplot(lstm_model.history[''])
+hist = pickle.load( open( "./shampoo_sales/model_history.pkl", "rb" ) )
+pyplot.plot(hist['loss'])
+pyplot.plot(hist['val_loss'])
+pyplot.title('model train vs validation loss')
+pyplot.ylabel('loss')
+pyplot.xlabel('epoch')
+pyplot.legend(['train', 'validation'], loc='upper right')
+pyplot.show()

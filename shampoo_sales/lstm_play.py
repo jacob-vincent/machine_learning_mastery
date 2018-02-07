@@ -75,8 +75,8 @@ def fit_lstm(train, test, batch_size, nb_epoch, neurons):
 	model.add(LSTM(neurons, stateful=True, return_sequences=False))
 	model.add(Dense(1, activation='sigmoid'))
 	model.compile(loss='mean_squared_error', optimizer='adam')
-	model.fit(X, y, epochs=nb_epoch, batch_size=batch_size, verbose=1, shuffle=False, validation_data=(x_test, y_test), callbacks=[history])
-	return model
+	h = model.fit(X, y, epochs=nb_epoch, batch_size=batch_size, verbose=1, shuffle=False, validation_data=(x_test, y_test), callbacks=[history])
+	return model, h
 
 # load dataset
 series = read_csv('~/Desktop/Machine_learning_mastery/shampoo_sales/shampoo_sales_data.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
@@ -105,7 +105,7 @@ numpy.savetxt('./shampoo_sales/test_scaled_df.csv', test_scaled, delimiter=',')
 print(train_scaled.shape, test_scaled.shape)
 
 # fit the model
-lstm_model = fit_lstm(train_scaled, test_scaled, 1, 20, 4)
+lstm_model, hist = fit_lstm(train_scaled, test_scaled, 1, 200, 4)
 
 # forecast the entire training dataset to build up state for forecasting
 train_reshaped = train_scaled[:, 0].reshape(len(train_scaled), 1, 1)
@@ -119,4 +119,7 @@ with open("./shampoo_sales/model.json", "w") as json_file:
 # serialize weights to HDF5
 lstm_model.save_weights("./shampoo_sales/model.h5")
 print("Saved model to disk")
-print(lstm_model.history.keys())
+
+with open('./shampoo_sales/model_history.pkl', 'wb') as file_pi:
+        pickle.dump(hist.history, file_pi)
+		
