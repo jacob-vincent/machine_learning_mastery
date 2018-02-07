@@ -70,8 +70,10 @@ def fit_lstm(train, test, batch_size, nb_epoch, neurons):
 	print(X.shape)
 	print(x_test.shape)
 	model = Sequential()
-	model.add(LSTM(neurons, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=True, return_sequences=True))
+	model.add(LSTM(neurons, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=False, return_sequences=True))
 	model.add(Dense(2*neurons, activation='relu'))
+	model.add(Dense(128, activation='relu'))
+	model.add(Dense(neurons, activation='relu'))
 	model.add(LSTM(neurons, stateful=True, return_sequences=False))
 	model.add(Dense(1, activation='sigmoid'))
 	model.compile(loss='mean_squared_error', optimizer='adam')
@@ -91,21 +93,21 @@ supervised_values = supervised.values
 
 # split data into train and test-sets, saving results
 train, test = supervised_values[0:-12], supervised_values[-12:]
-numpy.savetxt('./shampoo_sales/train_df.csv', train, delimiter=',')
-numpy.savetxt('./shampoo_sales/test_df.csv', test, delimiter=',')
+numpy.savetxt('train_df.csv', train, delimiter=',')
+numpy.savetxt('test_df.csv', test, delimiter=',')
 
 # transform the scale of the data
 scaler, train_scaled, test_scaled = scale(train, test)
 
 # Save scaler object and scaled data
-joblib.dump(scaler, './shampoo_sales/lstm_scaler.pkl')
-numpy.savetxt('./shampoo_sales/train_scaled_df.csv', train_scaled, delimiter=',')
-numpy.savetxt('./shampoo_sales/test_scaled_df.csv', test_scaled, delimiter=',')
+joblib.dump(scaler, 'lstm_scaler.pkl')
+numpy.savetxt('train_scaled_df.csv', train_scaled, delimiter=',')
+numpy.savetxt('test_scaled_df.csv', test_scaled, delimiter=',')
 
 print(train_scaled.shape, test_scaled.shape)
 
 # fit the model
-lstm_model, hist = fit_lstm(train_scaled, test_scaled, 1, 200, 4)
+lstm_model, hist = fit_lstm(train_scaled, test_scaled, 1, 256, 8)
 
 # forecast the entire training dataset to build up state for forecasting
 train_reshaped = train_scaled[:, 0].reshape(len(train_scaled), 1, 1)
@@ -114,12 +116,11 @@ lstm_model.predict(train_reshaped, batch_size=1)
 # Save model
 # serialize model to JSON
 model_json = lstm_model.to_json()
-with open("./shampoo_sales/model.json", "w") as json_file:
+with open("model.json", "w") as json_file:
     json_file.write(model_json)
 # serialize weights to HDF5
-lstm_model.save_weights("./shampoo_sales/model.h5")
+lstm_model.save_weights("model.h5")
 print("Saved model to disk")
 
-with open('./shampoo_sales/model_history.pkl', 'wb') as file_pi:
+with open('model_history.pkl', 'wb') as file_pi:
         pickle.dump(hist.history, file_pi)
-		

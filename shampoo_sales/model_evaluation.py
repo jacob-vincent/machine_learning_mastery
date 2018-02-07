@@ -4,7 +4,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
 
 # Import statements
-from __future__ import absolute_import
+# from __future__ import absolute_import
 from pandas import DataFrame, Series, concat, read_csv, datetime
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -48,24 +48,24 @@ def invert_scale(scaler, X, value):
 	return inverted[0, -1]
 
 # Load json and create model
-json_file = open('./shampoo_sales/model.json', 'r')
+json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 
 # Load weights into new model
-loaded_model.load_weights("./shampoo_sales/model.h5")
+loaded_model.load_weights("model.h5")
 print("Loaded model from disk")
 
 # Load scaler object
-scaler = joblib.load('./shampoo_sales/lstm_scaler.pkl')
+scaler = joblib.load('lstm_scaler.pkl')
 
 # Load train and test dataframes
-train = numpy.genfromtxt('./shampoo_sales/train_df.csv', delimiter=',')
-test = numpy.genfromtxt('./shampoo_sales/test_df.csv', delimiter=',')
+train = numpy.genfromtxt('train_df.csv', delimiter=',')
+test = numpy.genfromtxt('test_df.csv', delimiter=',')
 test = test.reshape(test.shape[0], test.shape[1])
 test_scaled = scaler.transform(test)
-raw_values = read_csv('./shampoo_sales/shampoo_sales_data.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser).values
+raw_values = read_csv('shampoo_sales_data.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser).values
 
 # walk-forward validation on the test data
 predictions = list()
@@ -92,7 +92,7 @@ pyplot.plot(predictions)
 pyplot.show()
 
 # Evaluate underfitting/overfitting
-hist = pickle.load( open( "./shampoo_sales/model_history.pkl", "rb" ) )
+hist = pickle.load( open( "model_history.pkl", "rb" ) )
 pyplot.plot(hist['loss'])
 pyplot.plot(hist['val_loss'])
 pyplot.title('model train vs validation loss')
