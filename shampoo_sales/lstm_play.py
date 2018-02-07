@@ -69,6 +69,7 @@ def fit_lstm(train, test, batch_size, nb_epoch, neurons):
 	model = Sequential()
 	model.add(LSTM(neurons, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=True, return_sequences=True))
 	model.add(Dense(2*neurons, activation='relu'))
+	model.add(LSTM(neurons, stateful=True, return_sequences=False))
 	model.add(Dense(1))
 	model.compile(loss='mean_squared_error', optimizer='adam')
 	for i in range(nb_epoch):
@@ -127,9 +128,9 @@ for i in range(len(test_scaled)):
 rmse = sqrt(mean_squared_error(raw_values[-12:], predictions))
 print('Test RMSE: %.3f' % rmse)
 # line plot of observed vs predicted
-# pyplot.plot(raw_values[-12:])
-# pyplot.plot(predictions)
-# pyplot.show()
+pyplot.plot(raw_values[-12:])
+pyplot.plot(predictions)
+pyplot.show()
 
 # Evaluate underfitting/overfitting
 pyplot(lstm_model.history['loss'])
