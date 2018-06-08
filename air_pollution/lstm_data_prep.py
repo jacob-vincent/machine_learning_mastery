@@ -1,20 +1,16 @@
 # Silence TensorFlow warnings
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any in {'0', '1', '2'}
 import tensorflow as tf
 
 from math import sqrt
 from numpy import concatenate
 from matplotlib import pyplot
-from pandas import read_csv
-from pandas import DataFrame
-from pandas import concat
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import LabelEncoder
+from pandas import read_csv, DataFrame, concat
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.metrics import mean_squared_error
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
+from keras.layers import Dense, LSTM
 
 # convert series to supervised learning
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
@@ -41,7 +37,8 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 	return agg
 
 # load dataset
-dataset = read_csv('~/Desktop/Machine_learning_mastery/air_pollution/pollution.csv', header=0, index_col=0)
+os.chdir('../')
+dataset = read_csv('air_pollution/pollution.csv', header=0, index_col=0)
 values = dataset.values
 # integer encode direction
 encoder = LabelEncoder()
@@ -59,7 +56,7 @@ reframed.drop(reframed.columns[[9,10,11,12,13,14,15]], axis=1, inplace=True)
 # reframed.head()
 
 # split into train and test sets
-# Using n_train_hours, we are only training on the first year of data (365*24), and evaluating on the other 4
+# Using n_train_hours, we are only training on the first 3 years of data (365*24*3), and evaluating on the other 1
 values = reframed.values
 n_train_hours = 365 * 24 * 3
 train = values[:n_train_hours, :]
